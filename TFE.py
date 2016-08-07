@@ -7,6 +7,8 @@ class GameState:
     defaultState = np.zeros((4, 4), np.int8)
 
     def __init__(self, state=defaultState, score=0):
+        # State of the board is represented by log2 of original.
+        # Stored as a numpy 4x4 matrix
         self.state = state
         self.score = score
 
@@ -62,7 +64,7 @@ class GameState:
                     # Merge blocks and update score
                     self.state[row, column] += 1
                     self.state[row, column+1] = 0
-                    self.score += self.state[row, column]
+                    self.score += 2 ** self.state[row, column]
 
             # Move all the zeros to the end of row again
             self.state[row, :] = pushZerosToEnd(self.state[row, :])
