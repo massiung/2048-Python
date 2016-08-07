@@ -1,6 +1,6 @@
 'Allows a user to play the game 2048'
 import numpy as np
-
+import Tkinter as tk
 
 class GameState:
     'Models the current state of the game.'
@@ -110,9 +110,8 @@ def pushZerosToEnd(arr):
 
     return arr
 
-
-# Main I/O loop
-if __name__ == "__main__":
+def runCLI():
+    'Command Line Interface for the 2048 game.'
     game = GameState()
     game.randomStart()
     cmd = ''
@@ -126,7 +125,7 @@ if __name__ == "__main__":
         's': 'Down'
     }
 
-    # Exit the loop using 'q'
+    # I/O loop. Exit the loop using 'q'
     while cmd != 'q':
         game.printState()
         # Ask for input
@@ -147,3 +146,78 @@ if __name__ == "__main__":
             break
         else:
             print(instructions)
+
+colours = {
+    0: 'white',
+    1: 'yellow',
+    2: 'orange',
+    3: 'green',
+    4: 'blue',
+    5: 'brown',
+    6: 'grey'
+}
+
+class GUITFE(tk.Frame):
+    def __init__(self, master, gameState):
+        tk.Frame.__init__(self, master)
+        self.gameState = gameState
+        self.canvases = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+        self.rectangles = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+        self.texts = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+        self.createBlocks()
+        self.master.title('GUI 2048')
+        self.master.bind('<Left>', self.leftBind)
+        self.master.bind('<Up>', self.upBind)
+        self.master.bind('<Right>', self.rightBind)
+        self.master.bind('<Down>', self.downBind)
+        self.grid()
+
+    def createBlocks(self):
+        for row in range(4):
+            for column in range(4):
+                self.canvases[row][column] = canvas = tk.Canvas(self, width=60, height=60)
+                canvas.grid(row=row, column=column)
+                value=self.gameState.state[row,column]
+                self.rectangles[row][column] = canvas.create_rectangle(2,2,58,58,fill=colours[value])
+                self.texts[row][column] = canvas.create_text(30,30,text=repr(2**value))
+
+    def updateBlocks(self):
+        for row in range(4):
+            for column in range(4):
+                canvas = self.canvases[row][column]
+                canvas.delete()
+                value = self.gameState.state[row,column]
+                self.rectangles[row][column] = canvas.create_rectangle(2,2,58,58,fill=colours[value])
+                self.texts[row][column] = canvas.create_text(30,30,text=repr(2**value))
+
+    def leftBind(self, event=None):
+        self.gameState.moveLeft()
+        self.gameState.placeTile()
+        self.updateBlocks()
+
+    def rightBind(self, event=None):
+        self.gameState.moveRight()
+        self.gameState.placeTile()
+        self.updateBlocks()
+
+    def upBind(self, event=None):
+        self.gameState.moveUp()
+        self.gameState.placeTile()
+        self.updateBlocks()
+
+    def downBind(self, event=None):
+        self.gameState.moveDown()
+        self.gameState.placeTile()
+        self.updateBlocks()
+
+def test(event):
+    print('Left!!!')
+
+game = GameState()
+game.randomStart()
+
+app = GUITFE(None, game)
+app.mainloop()
+
+#if __name__ == "__main__":
+#    runCLI()
