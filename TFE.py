@@ -164,6 +164,7 @@ class GUITFE(tk.Frame):
         self.canvases = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
         self.rectangles = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
         self.texts = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]
+        self.scoreCanvas = None
         self.createBlocks()
         self.master.title('GUI 2048')
         self.master.bind('<Left>', self.leftBind)
@@ -181,16 +182,23 @@ class GUITFE(tk.Frame):
                 self.rectangles[row][column] = canvas.create_rectangle(2,2,58,58,fill=colours[value])
                 self.texts[row][column] = canvas.create_text(30,30,text=repr(2**value))
 
+        self.scoreCanvas = tk.Canvas(self, width=120, height=60)
+        self.scoreCanvas.grid(row=4, column=2, columnspan=2)
+        self.scoreCanvas.create_text(60,30,text="Score: " + repr(self.gameState.score))
+
     def updateBlocks(self):
         for row in range(4):
             for column in range(4):
                 canvas = self.canvases[row][column]
-                canvas.delete()
+                canvas.delete("all")
                 value = self.gameState.state[row,column]
                 self.rectangles[row][column] = canvas.create_rectangle(2,2,58,58,fill=colours[value])
                 self.texts[row][column] = canvas.create_text(30,30,text=repr(2**value))
+        self.scoreCanvas.delete("all")
+        self.scoreCanvas.create_text(60,30,text="Score: " + repr(self.gameState.score))
 
     def leftBind(self, event=None):
+        # TODO: Check that it is a legal move.
         self.gameState.moveLeft()
         self.gameState.placeTile()
         self.updateBlocks()
