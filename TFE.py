@@ -179,8 +179,24 @@ class GUITFE(tk.Frame):
                 self.canvases[row][column] = canvas = tk.Canvas(self, width=60, height=60)
                 canvas.grid(row=row, column=column)
                 value=self.gameState.state[row,column]
-                self.rectangles[row][column] = canvas.create_rectangle(2,2,58,58,fill=colours[value])
-                self.texts[row][column] = canvas.create_text(30,30,text=repr(2**value))
+
+                # Determine the colour of the square from the value
+                colour = ''
+                if value in colours:
+                    colour = colours[value]
+                else:
+                    colour = 'grey'
+                # Determine the text on the square
+                text = ''
+                if value == 0:
+                    text = ''
+                else:
+                    text = repr(2**value)
+
+                # Make the coloured square
+                self.rectangles[row][column] = canvas.create_rectangle(2,2,58,58,fill=colour)
+                # Put the text on the square
+                self.texts[row][column] = canvas.create_text(30,30,text=text)
 
         self.scoreCanvas = tk.Canvas(self, width=120, height=60)
         self.scoreCanvas.grid(row=4, column=2, columnspan=2)
@@ -192,31 +208,52 @@ class GUITFE(tk.Frame):
                 canvas = self.canvases[row][column]
                 canvas.delete("all")
                 value = self.gameState.state[row,column]
-                self.rectangles[row][column] = canvas.create_rectangle(2,2,58,58,fill=colours[value])
-                self.texts[row][column] = canvas.create_text(30,30,text=repr(2**value))
+
+                # Determine the colour of the square from the value
+                colour = ''
+                if value in colours:
+                    colour = colours[value]
+                else:
+                    colour = 'grey'
+                # Determine the text on the square
+                text = ''
+                if value == 0:
+                    text = ''
+                else:
+                    text = repr(2**value)
+
+                self.rectangles[row][column] = canvas.create_rectangle(2,2,58,58,fill=colour)
+                self.texts[row][column] = canvas.create_text(30,30,text=text)
         self.scoreCanvas.delete("all")
         self.scoreCanvas.create_text(60,30,text="Score: " + repr(self.gameState.score))
 
     def leftBind(self, event=None):
-        # TODO: Check that it is a legal move.
+        oldState = np.copy(self.gameState.state)
         self.gameState.moveLeft()
-        self.gameState.placeTile()
-        self.updateBlocks()
+        if not np.array_equal(self.gameState.state, oldState):
+            self.gameState.placeTile()
+            self.updateBlocks()
 
     def rightBind(self, event=None):
+        oldState = np.copy(self.gameState.state)
         self.gameState.moveRight()
-        self.gameState.placeTile()
-        self.updateBlocks()
+        if not np.array_equal(self.gameState.state, oldState):
+            self.gameState.placeTile()
+            self.updateBlocks()
 
     def upBind(self, event=None):
+        oldState = np.copy(self.gameState.state)
         self.gameState.moveUp()
-        self.gameState.placeTile()
-        self.updateBlocks()
+        if not np.array_equal(self.gameState.state, oldState):
+            self.gameState.placeTile()
+            self.updateBlocks()
 
     def downBind(self, event=None):
+        oldState = np.copy(self.gameState.state)
         self.gameState.moveDown()
-        self.gameState.placeTile()
-        self.updateBlocks()
+        if not np.array_equal(self.gameState.state, oldState):
+            self.gameState.placeTile()
+            self.updateBlocks()
 
 def test(event):
     print('Left!!!')
