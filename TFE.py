@@ -158,6 +158,7 @@ colours = {
 }
 
 class GUITFE(tk.Frame):
+    'Graphical User Interface for 2048'
     def __init__(self, master, gameState):
         tk.Frame.__init__(self, master)
         self.gameState = gameState
